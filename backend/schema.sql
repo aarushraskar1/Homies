@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS entitlements (id BIGSERIAL PRIMARY KEY,user_id TEXT NOT NULL,product_id TEXT NOT NULL,purchase_token TEXT NOT NULL UNIQUE,status TEXT NOT NULL CHECK(status IN ('ACTIVE','EXPIRED','CANCELED','PENDING')),expires_at TIMESTAMPTZ,updated_at TIMESTAMPTZ NOT NULL DEFAULT now());
+CREATE INDEX IF NOT EXISTS idx_entitlements_user_status ON entitlements(user_id,status);
+CREATE INDEX IF NOT EXISTS idx_entitlements_expiry ON entitlements(expires_at);
