@@ -1,21 +1,40 @@
 # Homies Gym
 
-Advanced Android fitness MVP built with Kotlin + Jetpack Compose.
+Complete Android fitness app foundation plus a production-oriented Google Play subscription backend.
 
-## Included
-- Dashboard, training library, progress, profile
-- Local workout history/stats via DataStore
-- Homies Pro subscription architecture using Google Play Billing 9.1.0
-- Premium workout gating
-- Subscription paywall
-- Material 3 dark UI
-- Clean separation between repository, ViewModel, UI, and billing
+## Features
+- Dashboard, daily mission, training programs and progress
+- Local workout history/stats
+- Homies Pro premium gating
+- Monthly and yearly Google Play subscriptions
+- Purchase restore and acknowledgement
+- Google Play Developer API subscription verification
+- Google Play Real-time Developer Notifications (RTDN) endpoint
+- PostgreSQL entitlement schema and indexes
+- Secure environment configuration
+- Backend health endpoint
 
-## Play Console setup
-Create a subscription product with ID `homies_premium_monthly` and configure its base plan/offer. Real purchase verification should be performed by a secure backend using Google Play Developer APIs before production launch.
+## Product IDs
+- homies_premium_monthly
+- homies_premium_yearly
 
-## Build
-```bash
+Create these subscription products/base plans in Google Play Console before testing purchases.
+
+## Production security
+Google service-account credentials stay on the backend. Replace the development x-homies-user-id header with real authenticated Homies JWT/session middleware before launch.
+
+## Launch Commands
+
+Android:
 gradle assembleDebug
-gradle test
-```
+
+Backend:
+cd backend
+npm install
+npm run build
+npm start
+
+## Verification Guide
+1. Build the Android app and verify dashboard/training flows.
+2. Configure Play Console license testers and subscription products, then verify purchase and restore.
+3. Configure Pub/Sub RTDN and verify /health plus subscription lifecycle processing.
