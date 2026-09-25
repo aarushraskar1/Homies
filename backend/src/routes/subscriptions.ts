@@ -1,0 +1,6 @@
+import {Router} from "express";import {z} from "zod";import {getSubscription} from "../googlePlay.js";import {upsertEntitlement,getEntitlements} from "../entitlements.js";
+const router=Router();const body=z.object({purchaseToken:z.string().min(10),productId:z.string().min(1)});
+function uid(req:any){const id=req.header("x-homies-user-id");if(!id||id.length>128)throw new Error("Missing authenticated Homies user");return id}
+router.get("/me",(req,res)=>{try{res.json({entitlements:getEntitlements(uid(req))})}catch{res.status(401).json({error:"unauthenticated"})}});
+router.post("/verify",async(req,res)=>{const p=body.safeParse(req.body);if(!p.success)return res.status(400).json({error:"invalid_request"});try{const userId=uid(req);const r=await getSubscription(p.data.purchaseToken);const s=r.data;const line=s.lineItems?.find(x=>x.productId===p.data.productId);const state=s.subscriptionState;const status=state==="SUBSCRIPTION_STATE_ACTIVE"?"ACTIVE":state==="SUBSCRIPTION_STATE_EXPIRED"?"EXPIRED":"PENDING";return res.json(upsertEntitlement({userId,productId:p.data.productId,purchaseToken:p.data.purchaseToken,status,expiresAt:line?.expiryTime}))}catch(e){console.error("verification failed",e instanceof Error?e.message:"unknown");return res.status(502).json({error:"verification_failed"})}});
+export default router;
